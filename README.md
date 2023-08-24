@@ -5,3 +5,6 @@
 ## run project
 - install mvn
 - run cmd: mvn clean spring-boot:run
+
+## Swagger
+- link: http://localhost:3000/swagger-ui/index.html#/
