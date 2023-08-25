@@ -1,4 +1,4 @@
-package spring.springboot.middlewares;
+package spring.springboot.configurations;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;

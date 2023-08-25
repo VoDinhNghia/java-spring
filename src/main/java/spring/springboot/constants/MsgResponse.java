@@ -6,4 +6,5 @@ public class MsgResponse {
 
     public static final String createUser = "Create user success";
     public static final String getListUser = "Get list users success";
+    public static final String emailExisted = "Email existed in system";
 }
