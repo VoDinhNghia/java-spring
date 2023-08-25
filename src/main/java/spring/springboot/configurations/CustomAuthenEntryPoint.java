@@ -1,4 +1,4 @@
-package spring.springboot.middlewares;
+package spring.springboot.configurations;
 
 import java.io.IOException;
 import java.io.StringWriter;
