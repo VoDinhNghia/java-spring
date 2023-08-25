@@ -43,10 +43,10 @@ public class JwtToken {
         return email;
     }
 
-    // public String[] decoBase64(String token) {
-    //     byte[] decoBasedBytes = Base64.getDecoder().decode(token);
-    //     String pairedCredentials = new String(decoBasedBytes);
-    //     String[] credentials = pairedCredentials.split(":", 2);
-    //     return credentials;
-    // }
+    public String[] decoBase64(String token) {
+        byte[] decoBasedBytes = Base64.getDecoder().decode(token);
+        String pairedCredentials = new String(decoBasedBytes);
+        String[] credentials = pairedCredentials.split(":", 2);
+        return credentials;
+    }
 }
