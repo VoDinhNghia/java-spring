@@ -2,19 +2,28 @@ package spring.springboot.services;
 
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import spring.springboot.constants.SecurityConstant;
 import spring.springboot.entities.UserEntity;
 import spring.springboot.repositories.UserRepository;
+import spring.springboot.utils.CryptoPassword;
 
 @Service
 public class UserService {
     @Autowired
     UserRepository userRepository;
+
+    CryptoPassword cryptoPassword = new CryptoPassword();
 
     public UserEntity createUser(UserEntity user) {
         UserEntity result = userRepository.save(user);
@@ -50,5 +59,34 @@ public class UserService {
         data.put("results", results);
         data.put("total", total);
         return data;
+    }
+
+    public List<GrantedAuthority> getAuthorities(List<String> roles) {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role)));
+        return authorities;
+    }
+
+    public CommandLineRunner initAccountAdmin() {
+        try {
+            String code = "Admin-spring-boot-2023";
+            UserEntity admin = userRepository.findByCode(code);
+            if (admin == null) {
+                UserEntity user = new UserEntity();
+                user.setName("Admin App");
+                user.setCode(code);
+                user.setPassword(cryptoPassword.endCode("admin123@"));
+                user.setEmail("vodinhnghia85@gmail.com");
+                user.setUserAuthorities(
+                        getAuthorities(new ArrayList<String>(Arrays.asList(new String[] {
+                                SecurityConstant.adminRole
+                        }))));
+                userRepository.save(user);
+                System.out.println("Create admin success");
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

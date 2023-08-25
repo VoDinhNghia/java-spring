@@ -24,5 +24,8 @@ public class UserEntity extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private String code;
+
     private List<GrantedAuthority> userAuthorities;
 }
