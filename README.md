@@ -11,3 +11,4 @@
 ## Swagger
 
 - link: http://localhost:3000/swagger-ui/index.html#/
+- All private api => use postman to test (use swagger => error unauthencation (not fixed yet))

@@ -12,8 +12,10 @@ public class UserDto {
     @NotEmpty
     private String email;
 
+    @NotEmpty
     private String name;
 
+    @NotEmpty
     private String password;
 
     public void setUserAuthorities(List<GrantedAuthority> authorities){};
