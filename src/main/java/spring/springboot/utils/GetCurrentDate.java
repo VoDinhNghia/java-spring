@@ -6,40 +6,30 @@ public class GetCurrentDate {
     Calendar calendar = Calendar.getInstance();
 
     public String getTime() {
-       int hour = calendar.get(10);
-       int minute = calendar.get(12);
-       int second = calendar.get(13);
-       String time = hour + ":" + minute + ":" + second;
-       return time; 
+        String time = calendar.get(10) + ":" + calendar.get(12) + ":" + calendar.get(13);
+        return time;
     }
 
     public int getDate() {
-        int date = calendar.get(5);
-        return date;
+        return calendar.get(5);
     }
 
     public int getMonth() {
-        int m = calendar.get(2);
-        int month = m + 1;
-        return month;
+        return calendar.get(2) + 1;
     }
 
     public int getYear() {
-        int year = calendar.get(1);
-        return year;
+        return calendar.get(1);
     }
 
     public String getFullDateTime() {
-        int year = this.getYear();
-        int month = this.getMonth();
-        int date = this.getDate();
-        String time = this.getTime();
-        String fullDateTime = year + "-" + month + "-" + date + " " + time;
+        String fullDateTime = this.getYear() + "-" + this.getMonth() + "-" + this.getDate() + " " + this.getTime();
         return fullDateTime;
     }
 
     public String prefixPathImage() {
-        String prefixPath = this.getYear() + "" + this.getMonth() + "" + this.getDate() + "" + calendar.get(10) + "" + calendar.get(12) + "" + calendar.get(13);
+        String prefixPath = this.getYear() + "" + this.getMonth() + "" + this.getDate() + "" + calendar.get(10) + ""
+                + calendar.get(12) + "" + calendar.get(13);
         return prefixPath;
     }
 }
