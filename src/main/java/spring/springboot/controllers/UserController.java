@@ -30,6 +30,7 @@ import spring.springboot.validates.HandleValidateFields;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import spring.springboot.constants.Constants;
 
 @RestController
 public class UserController {
@@ -49,9 +50,9 @@ public class UserController {
     @GetMapping(NameApi.getListUser)
     public Map<String, Object> getListUser(Map<String, String> query) {
         try {
-            String limit = query.get("limit");
-            String page = query.get("page");
-            String searchKey = query.get("searchKey");
+            String limit = query.get(Constants.queryLimit);
+            String page = query.get(Constants.queryPage);
+            String searchKey = query.get(Constants.querySearchKey);
             Map<String, Object> results = userService.getListUsers(limit, page, searchKey);
             return res.responseResult(results, MsgResponse.getListUser);
         } catch (Exception e) {
