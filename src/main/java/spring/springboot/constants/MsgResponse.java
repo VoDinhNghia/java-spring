@@ -11,4 +11,11 @@ public class MsgResponse {
     public static final String getListUser = "Get list users success";
     public static final String emailExisted = "Email existed in system";
     public static final String userNotFound = "User not found";
+
+    public static final String createCategory = "Create category success";
+    public static final String getListCategories = "Get list category success";
+    public static final String updateCategory = "Update category success";
+    public static final String deleteCategory = "Delete category success";
+    public static final String getCategoryById = "Get category success";
+    public static final String categoryNotFound = "Category not found";
 }
