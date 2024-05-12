@@ -5,10 +5,11 @@ import java.security.NoSuchAlgorithmException;
 
 public class CryptoPassword {
     private static MessageDigest md;
+    private static String alg = "MD5";
 
     public String endCode(String password) {
         try {
-            md = MessageDigest.getInstance("MD5");
+            md = MessageDigest.getInstance(alg);
             byte[] passBytes = password.getBytes();
             md.reset();
             byte[] digested = md.digest(passBytes);
