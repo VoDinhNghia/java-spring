@@ -5,6 +5,7 @@ import java.util.Map;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import spring.springboot.constants.HttpStatusCode;
 import spring.springboot.constants.MsgResponse;
@@ -26,6 +28,8 @@ import spring.springboot.utils.CryptoPassword;
 import spring.springboot.utils.JwtToken;
 import spring.springboot.utils.ResponseController;
 import spring.springboot.validates.HandleValidateFields;
+import org.springframework.web.bind.annotation.GetMapping;
+import spring.springboot.constants.SecurityConstant;
 
 @RestController
 public class AuthController {
@@ -62,6 +66,19 @@ public class AuthController {
             return res.responseResult(response, MsgResponse.authLogin);
         } catch (Exception e) {
             System.out.println(e);
+            return exception.interval();
+        }
+    }
+
+    @GetMapping(NameApi.getMe)
+    public Map<String, Object> getMe(HttpServletRequest req) {
+        try {
+            String headerReq = req.getHeader(SecurityConstant.authorization);
+            String accessToken = StringUtils.delete(headerReq, SecurityConstant.prefixBearToken).trim();
+            String email = jwtToken.getEmailFromToken(accessToken);
+            UserEntity user = userService.findByEmail(email);
+            return res.responseResult(user, MsgResponse.getMe);
+        } catch (Exception e) {
             return exception.interval();
         }
     }
