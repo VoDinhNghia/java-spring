@@ -38,8 +38,6 @@ public class CustomRequestHeaderToken extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String email = "";
-        UsernamePasswordAuthenticationToken authencation;
         String uri = request.getRequestURI();
         logger.info("Request uri: " + uri);
         try {
@@ -51,16 +49,7 @@ public class CustomRequestHeaderToken extends OncePerRequestFilter {
             }
 
             if (headerToken.startsWith(SecurityConstant.prefixBearToken)) {
-                headerToken = StringUtils.delete(headerToken, SecurityConstant.prefixBearToken).trim();
-                if (jwtToken.isTokenValid(headerToken)) {
-                    email = jwtToken.getEmailFromToken(headerToken);
-                    User user = (User) userService.loadUserByUsername(email);
-                    if (user != null) {
-                        authencation = new UsernamePasswordAuthenticationToken(email, null, user.getAuthorities());
-                        SecurityContextHolder.getContext().setAuthentication(authencation);
-                        logger.info("Authentication: " + authencation.toString());
-                    }
-                }
+                handleAuthen(headerToken);
             }
         } catch (AuthenticationException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -68,5 +57,19 @@ public class CustomRequestHeaderToken extends OncePerRequestFilter {
         response.setHeader("Access-Control-Allow-Origin", "*");
         filterChain.doFilter(request, response);
     }
-    
+
+    private void handleAuthen(String headerToken) {
+        UsernamePasswordAuthenticationToken authencation;
+        String email = "";
+        headerToken = StringUtils.delete(headerToken, SecurityConstant.prefixBearToken).trim();
+        if (jwtToken.isTokenValid(headerToken)) {
+            email = jwtToken.getEmailFromToken(headerToken);
+            User user = (User) userService.loadUserByUsername(email);
+            if (user != null) {
+                authencation = new UsernamePasswordAuthenticationToken(email, null, user.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authencation);
+                logger.info("Authentication: " + authencation.toString());
+            }
+        }
+    }
 }

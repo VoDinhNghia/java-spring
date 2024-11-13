@@ -10,15 +10,17 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.security.SecuritySchemes;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import spring.springboot.constants.Swagger;
 
 @Configuration
-@OpenAPIDefinition(security = { @SecurityRequirement(name = "bearerToken") })
+@OpenAPIDefinition(security = { @SecurityRequirement(name = Swagger.swgSecMethodName) })
 @SecuritySchemes({
-    @SecurityScheme(name = "bearerToken", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT")
+        @SecurityScheme(name = Swagger.swgSecMethodName, type = SecuritySchemeType.HTTP, scheme = Swagger.swgScheme, bearerFormat = Swagger.swgBearerFormat)
 })
 public class SwaggerConfig {
     @Bean
     public OpenAPI springOpenAPI() {
-        return new OpenAPI().info(new Info().title("Spring boot Api document").description("Api management document").version("1.0"));
+        return new OpenAPI()
+                .info(new Info().title(Swagger.swgTitle).description(Swagger.swgDes).version(Swagger.swgVer));
     }
 }

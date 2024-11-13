@@ -40,16 +40,21 @@ public class SecurityConfiguration {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.headers(header -> header.frameOptions(option -> option.disable()))
-            .cors(cors -> cors.configurationSource(corsConfigurition())).csrf(crfs -> crfs.disable())
-            .sessionManagement((ses) -> ses.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .exceptionHandling((ex) -> ex.authenticationEntryPoint(customAuthenEntryPoint))
-            .authorizeHttpRequests(
-                (auth) -> auth
-                    .requestMatchers(SecurityConstant.publicAuthen).permitAll()
-                    .requestMatchers(SecurityConstant.swaggerDocs, SecurityConstant.swaggerResource, SecurityConstant.docsApi).permitAll()
-                    .requestMatchers(SecurityConstant.commonAuthen).hasAnyAuthority(SecurityConstant.adminRole, SecurityConstant.userRole)
-                    .requestMatchers(SecurityConstant.privateAdminAuthen).hasAnyAuthority(SecurityConstant.adminRole)
-                    .requestMatchers(SecurityConstant.privateUserAuthen).hasAnyAuthority(SecurityConstant.userRole));
+                .cors(cors -> cors.configurationSource(corsConfigurition())).csrf(crfs -> crfs.disable())
+                .sessionManagement((ses) -> ses.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling((ex) -> ex.authenticationEntryPoint(customAuthenEntryPoint))
+                .authorizeHttpRequests(
+                        (auth) -> auth
+                                .requestMatchers(SecurityConstant.publicAuthen).permitAll()
+                                .requestMatchers(SecurityConstant.swaggerDocs, SecurityConstant.swaggerResource,
+                                        SecurityConstant.docsApi)
+                                .permitAll()
+                                .requestMatchers(SecurityConstant.commonAuthen)
+                                .hasAnyAuthority(SecurityConstant.adminRole, SecurityConstant.userRole)
+                                .requestMatchers(SecurityConstant.privateAdminAuthen)
+                                .hasAnyAuthority(SecurityConstant.adminRole)
+                                .requestMatchers(SecurityConstant.privateUserAuthen)
+                                .hasAnyAuthority(SecurityConstant.userRole));
         http.addFilterBefore(customFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
@@ -57,15 +62,17 @@ public class SecurityConfiguration {
     @Bean
     UrlBasedCorsConfigurationSource corsConfigurition() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "Origin"));
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:8000"));
-        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "DELETE", "PUT"));
+        corsConfiguration.setAllowedHeaders(List.of(SecurityConstant.authorization, SecurityConstant.cacheControl,
+                SecurityConstant.contentType, SecurityConstant.origin));
+        corsConfiguration.setAllowedOrigins(List.of(SecurityConstant.frontEndUrl));
+        corsConfiguration.setAllowedMethods(List.of(SecurityConstant.getMethod, SecurityConstant.postMethod,
+                SecurityConstant.deleteMethod, SecurityConstant.putMethod));
         corsConfiguration.setAllowCredentials(true);
         corsConfiguration.setExposedHeaders(
-            List.of("Authorization", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials")
-        );
+                List.of(SecurityConstant.authorization, SecurityConstant.accessControl,
+                        SecurityConstant.accessControlCre));
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);
+        source.registerCorsConfiguration(SecurityConstant.corsPattern, corsConfiguration);
         return source;
     }
 }
