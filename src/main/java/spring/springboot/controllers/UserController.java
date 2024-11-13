@@ -63,17 +63,14 @@ public class UserController {
     @PostMapping(NameApi.createUser)
     public Map<String, Object> createUser(@Valid @RequestBody UserDto dto) {
         try {
-            String email = dto.getEmail();
-            String password = dto.getPassword();
-            UserEntity user = userService.findByEmail(email);
+            UserEntity user = userService.findByEmail(dto.getEmail());
             if (user != null) {
                 return error.response(HttpStatusCode.CONFLICT, MsgResponse.emailExisted);
             }
-            String endCodePass = cryptoPassword.endCode(password);
-            String code = userCode.createCode();
+            String endCodePass = cryptoPassword.endCode(dto.getPassword());
             UserEntity entity = modelMapper.map(dto, UserEntity.class);
             entity.setPassword(endCodePass);
-            entity.setCode(code);
+            entity.setCode(userCode.createCode());
             entity.setUserAuthorities(
                 userService.getAuthorities(new ArrayList<String>(Arrays.asList(new String[] {
                     SecurityConstant.userRole
