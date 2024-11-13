@@ -49,23 +49,19 @@ public class AuthController {
     @PostMapping(NameApi.authLogin)
     public Map<String, Object> login(@Valid @RequestBody LoginDto dto) {
         try {
-            String email = dto.getEmail();
-            String password = dto.getPassword();
-            UserEntity user = userService.findByEmail(email);
+            UserEntity user = userService.findByEmail(dto.getEmail());
             if (user == null) {
                 return error.response(HttpStatusCode.NOT_FOUND, MsgResponse.userNotFound);
             }
-            String pass = cryptoPassword.endCode(password);
+            String pass = cryptoPassword.endCode(dto.getPassword());
             String userPass = user.getPassword();
             if (!userPass.equals(pass)) {
                 return error.response(HttpStatusCode.UN_AUTHORIZED, MsgResponse.unAuthorized);
             }
-            String token = jwtToken.generateJwtToken(email);
             LoginResponseDto response = modelMapper.map(user, LoginResponseDto.class);
-            response.setAccessToken(token);
+            response.setAccessToken(jwtToken.generateJwtToken(dto.getEmail()));
             return res.responseResult(response, MsgResponse.authLogin);
         } catch (Exception e) {
-            System.out.println(e);
             return exception.interval();
         }
     }
