@@ -13,10 +13,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import spring.springboot.constants.Constants;
 import spring.springboot.constants.SecurityConstant;
 import spring.springboot.entities.UserEntity;
 import spring.springboot.repositories.UserRepository;
 import spring.springboot.utils.CryptoPassword;
+import spring.springboot.utils.FetchListQuery;
 
 @Service
 public class UserService {
@@ -24,6 +26,7 @@ public class UserService {
     UserRepository userRepository;
 
     CryptoPassword cryptoPassword = new CryptoPassword();
+    FetchListQuery fetchList = new FetchListQuery();
 
     public UserEntity createUser(UserEntity user) {
         UserEntity result = userRepository.save(user);
@@ -43,12 +46,8 @@ public class UserService {
     public Map<String, Object> getListUsers(String limit, String page, String searchKey) {
         List<UserEntity> findAll;
         long total = userRepository.findAll().stream().count();
-        long skip = 0;
-        long numberLimit = total;
-        if (limit != null && page != null) {
-            numberLimit = Integer.parseInt(limit);
-            skip = (Integer.parseInt(page) - 1) * numberLimit;
-        }
+        long skip = fetchList.pagQuery(total, limit, page).get(Constants.querySkip);
+        long numberLimit = fetchList.pagQuery(total, limit, page).get(Constants.numberLimit);
         if (searchKey != null) {
             findAll = userRepository.search(searchKey);
         } else {

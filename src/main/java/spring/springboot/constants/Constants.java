@@ -9,4 +9,6 @@ public class Constants {
     public static final String queryLimit = "limit";
     public static final String queryPage = "page";
     public static final String querySearchKey = "searchKey";
+    public static final String querySkip = "skip";
+    public static final String numberLimit = "numberLimit";
 }
