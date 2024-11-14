@@ -18,7 +18,7 @@ import spring.springboot.constants.SecurityConstant;
 import spring.springboot.entities.UserEntity;
 import spring.springboot.repositories.UserRepository;
 import spring.springboot.utils.CryptoPassword;
-import spring.springboot.utils.FetchListQuery;
+import spring.springboot.utils.CalQuery;
 
 @Service
 public class UserService {
@@ -26,7 +26,7 @@ public class UserService {
     UserRepository userRepository;
 
     CryptoPassword cryptoPassword = new CryptoPassword();
-    FetchListQuery fetchList = new FetchListQuery();
+    CalQuery calQuery = new CalQuery();
 
     public UserEntity createUser(UserEntity user) {
         UserEntity result = userRepository.save(user);
@@ -46,8 +46,8 @@ public class UserService {
     public Map<String, Object> getListUsers(String limit, String page, String searchKey) {
         List<UserEntity> findAll;
         long total = userRepository.findAll().stream().count();
-        long skip = fetchList.pagQuery(total, limit, page).get(Constants.querySkip);
-        long numberLimit = fetchList.pagQuery(total, limit, page).get(Constants.numberLimit);
+        long skip = calQuery.pagQuery(total, limit, page).get(Constants.querySkip);
+        long numberLimit = calQuery.pagQuery(total, limit, page).get(Constants.numberLimit);
         if (searchKey != null) {
             findAll = userRepository.search(searchKey);
         } else {

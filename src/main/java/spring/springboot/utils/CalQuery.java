@@ -5,7 +5,7 @@ import java.util.Map;
 
 import spring.springboot.constants.Constants;
 
-public class FetchListQuery {
+public class CalQuery {
     public Map<String, Long> pagQuery(long total, String limit, String page) {
         long skip = 0;
         long numberLimit = total;

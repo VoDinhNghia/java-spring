@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import spring.springboot.entities.CategoryEntity;
 import spring.springboot.repositories.CategoryRepository;
-import spring.springboot.utils.FetchListQuery;
+import spring.springboot.utils.CalQuery;
 import spring.springboot.constants.Constants;
 
 @Service
@@ -20,7 +20,7 @@ public class CategoryService {
     @Autowired
     CategoryRepository cateRepo;
 
-    FetchListQuery fetchList = new FetchListQuery();
+    CalQuery calQuery = new CalQuery();
 
     public CategoryEntity createCategory(CategoryEntity cateEntity) {
         CategoryEntity result = cateRepo.save(cateEntity);
@@ -35,8 +35,8 @@ public class CategoryService {
     public Map<String, Object> listCategories(String limit, String page, String searchKey) {
         List<CategoryEntity> findAll;
         long total = cateRepo.findAll().stream().count();
-        long skip = fetchList.pagQuery(total, limit, page).get(Constants.querySkip);
-        long numberLimit = fetchList.pagQuery(total, limit, page).get(Constants.numberLimit);
+        long skip = calQuery.pagQuery(total, limit, page).get(Constants.querySkip);
+        long numberLimit = calQuery.pagQuery(total, limit, page).get(Constants.numberLimit);
         if (searchKey != null) {
             findAll = cateRepo.search(searchKey);
         } else {
