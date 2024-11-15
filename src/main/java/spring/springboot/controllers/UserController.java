@@ -29,6 +29,7 @@ import spring.springboot.validates.HandleValidateFields;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import spring.springboot.constants.Constants;
 
@@ -48,7 +49,7 @@ public class UserController {
     GenerateUserCode userCode = new GenerateUserCode();
 
     @GetMapping(NameApi.getListUser)
-    public Map<String, Object> getListUser(Map<String, String> query) {
+    public Map<String, Object> getListUser(@RequestParam Map<String, String> query) {
         try {
             String limit = query.get(Constants.queryLimit);
             String page = query.get(Constants.queryPage);

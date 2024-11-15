@@ -11,4 +11,6 @@ public class Constants {
     public static final String querySearchKey = "searchKey";
     public static final String querySkip = "skip";
     public static final String numberLimit = "numberLimit";
+    public static final String resResults = "results";
+    public static final String resTotal = "total";
 }
