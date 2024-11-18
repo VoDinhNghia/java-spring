@@ -28,32 +28,32 @@ public class UserService {
     QueryList queryList = new QueryList();
 
     public UserEntity createUser(UserEntity user) {
-        UserEntity result = userRepository.save(user);
+        UserEntity result = this.userRepository.save(user);
         return result;
     }
 
     public Boolean updateUser(UserEntity user) {
-        userRepository.save(user);
+        this.userRepository.save(user);
         return true;
     }
 
     public UserEntity findByEmail(String email) {
-        UserEntity result = userRepository.findByEmail(email);
+        UserEntity result = this.userRepository.findByEmail(email);
         return result;
     }
 
     public Map<String, Object> getListUsers(String limit, String page, String searchKey) {
         List<UserEntity> findAll;
-        long total = userRepository.findAll().stream().count();
-        long skip = queryList.calPagination(total, limit, page).get(Constants.querySkip);
-        long numberLimit = queryList.calPagination(total, limit, page).get(Constants.numberLimit);
+        long total = this.userRepository.findAll().stream().count();
+        long skip = this.queryList.calPagination(total, limit, page).get(Constants.querySkip);
+        long numberLimit = this.queryList.calPagination(total, limit, page).get(Constants.numberLimit);
         if (searchKey != null) {
-            findAll = userRepository.search(searchKey);
+            findAll = this.userRepository.search(searchKey);
         } else {
-            findAll = userRepository.findAll();
+            findAll = this.userRepository.findAll();
         }
         List<UserEntity> results = findAll.stream().skip(skip).limit(numberLimit).collect(Collectors.toList());
-        return queryList.resList(results, total);
+        return this.queryList.resList(results, total);
     }
 
     public List<GrantedAuthority> getAuthorities(List<String> roles) {
@@ -76,7 +76,7 @@ public class UserService {
                         getAuthorities(new ArrayList<String>(Arrays.asList(new String[] {
                                 SecurityConstant.adminRole
                         }))));
-                userRepository.save(user);
+                this.userRepository.save(user);
                 System.out.println("Create admin success");
             }
             return null;
