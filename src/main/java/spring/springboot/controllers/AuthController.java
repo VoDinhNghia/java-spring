@@ -52,14 +52,12 @@ public class AuthController {
             if (user == null) {
                 return ex.notFound(HttpStatusCode.NOT_FOUND, MsgResponse.userNotFound);
             }
-            String pass = cryptoPassword.endCode(dto.getPassword());
-            String userPass = user.getPassword();
-            if (!userPass.equals(pass)) {
+            if (!user.getPassword().equals(cryptoPassword.endCode(dto.getPassword()))) {
                 return ex.unAuthen(HttpStatusCode.UN_AUTHORIZED, MsgResponse.unAuthorized);
             }
-            LoginResponseDto response = modelMapper.map(user, LoginResponseDto.class);
-            response.setAccessToken(jwtToken.generateJwtToken(dto.getEmail()));
-            return res.resResult(response, MsgResponse.authLogin);
+            LoginResponseDto result = modelMapper.map(user, LoginResponseDto.class);
+            result.setAccessToken(jwtToken.generateJwtToken(dto.getEmail()));
+            return res.resResult(result, MsgResponse.authLogin);
         } catch (Exception e) {
             return ex.serverInterval();
         }
@@ -70,8 +68,7 @@ public class AuthController {
         try {
             String headerReq = req.getHeader(SecurityConstant.authorization);
             String accessToken = StringUtils.delete(headerReq, SecurityConstant.prefixBearToken).trim();
-            String email = jwtToken.getEmailFromToken(accessToken);
-            UserEntity user = userService.findByEmail(email);
+            UserEntity user = userService.findByEmail(jwtToken.getEmailFromToken(accessToken));
             return res.resResult(user, MsgResponse.getMe);
         } catch (Exception e) {
             return ex.serverInterval();

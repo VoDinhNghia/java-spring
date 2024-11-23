@@ -67,9 +67,8 @@ public class UserController {
             if (user != null) {
                 return ex.conflict(HttpStatusCode.CONFLICT, MsgResponse.emailExisted);
             }
-            String endCodePass = cryptoPassword.endCode(dto.getPassword());
             UserEntity entity = modelMapper.map(dto, UserEntity.class);
-            entity.setPassword(endCodePass);
+            entity.setPassword(cryptoPassword.endCode(dto.getPassword()));
             entity.setCode(userCode.createCode());
             entity.setUserAuthorities(
                 userService.getAuthorities(new ArrayList<String>(Arrays.asList(new String[] {
