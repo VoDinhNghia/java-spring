@@ -22,36 +22,36 @@ public class CategoryService {
     QueryList queryList = new QueryList();
 
     public CategoryEntity createCategory(CategoryEntity cateEntity) {
-        CategoryEntity result = this.cateRepo.save(cateEntity);
+        CategoryEntity result = cateRepo.save(cateEntity);
         return result;
     }
 
     public Boolean updateCategory(CategoryEntity cateEntity) {
-        this.cateRepo.save(cateEntity);
+        cateRepo.save(cateEntity);
         return true;
     }
 
     public Map<String, Object> listCategories(String limit, String page, String searchKey) {
         List<CategoryEntity> findAll;
-        long total = this.cateRepo.findAll().stream().count();
-        long skip = this.queryList.calPagination(total, limit, page).get(Constants.querySkip);
-        long numberLimit = this.queryList.calPagination(total, limit, page).get(Constants.numberLimit);
+        long total = cateRepo.findAll().stream().count();
+        long skip = queryList.calPagination(total, limit, page).get(Constants.querySkip);
+        long numberLimit = queryList.calPagination(total, limit, page).get(Constants.numberLimit);
         if (searchKey != null) {
-            findAll = this.cateRepo.search(searchKey);
+            findAll = cateRepo.search(searchKey);
         } else {
-            findAll = this.cateRepo.findAll();
+            findAll = cateRepo.findAll();
         }
         List<CategoryEntity> results = findAll.stream().skip(skip).limit(numberLimit).collect(Collectors.toList());
-        return this.queryList.resList(results, total);
+        return queryList.resList(results, total);
     }
 
     public Boolean deleteCategory(UUID id) {
-        this.cateRepo.deleteById(id);
+        cateRepo.deleteById(id);
         return true;
     }
 
     public Optional<CategoryEntity> findById(UUID id) {
-        Optional<CategoryEntity> result = this.cateRepo.findById(id);
+        Optional<CategoryEntity> result = cateRepo.findById(id);
         return result;
     }
 }

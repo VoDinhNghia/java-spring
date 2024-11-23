@@ -28,32 +28,32 @@ public class UserService {
     QueryList queryList = new QueryList();
 
     public UserEntity createUser(UserEntity user) {
-        UserEntity result = this.userRepository.save(user);
+        UserEntity result = userRepository.save(user);
         return result;
     }
 
     public Boolean updateUser(UserEntity user) {
-        this.userRepository.save(user);
+        userRepository.save(user);
         return true;
     }
 
     public UserEntity findByEmail(String email) {
-        UserEntity result = this.userRepository.findByEmail(email);
+        UserEntity result = userRepository.findByEmail(email);
         return result;
     }
 
     public Map<String, Object> getListUsers(String limit, String page, String searchKey) {
         List<UserEntity> findAll;
-        long total = this.userRepository.findAll().stream().count();
-        long skip = this.queryList.calPagination(total, limit, page).get(Constants.querySkip);
-        long numberLimit = this.queryList.calPagination(total, limit, page).get(Constants.numberLimit);
+        long total = userRepository.findAll().stream().count();
+        long skip = queryList.calPagination(total, limit, page).get(Constants.querySkip);
+        long numberLimit = queryList.calPagination(total, limit, page).get(Constants.numberLimit);
         if (searchKey != null) {
-            findAll = this.userRepository.search(searchKey);
+            findAll = userRepository.search(searchKey);
         } else {
-            findAll = this.userRepository.findAll();
+            findAll = userRepository.findAll();
         }
         List<UserEntity> results = findAll.stream().skip(skip).limit(numberLimit).collect(Collectors.toList());
-        return this.queryList.resList(results, total);
+        return queryList.resList(results, total);
     }
 
     public List<GrantedAuthority> getAuthorities(List<String> roles) {
