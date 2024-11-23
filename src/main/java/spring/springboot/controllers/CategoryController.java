@@ -13,10 +13,8 @@ import spring.springboot.constants.MsgResponse;
 import spring.springboot.constants.NameApi;
 import spring.springboot.dtos.CategoryDto;
 import spring.springboot.entities.CategoryEntity;
-import spring.springboot.exceptions.CommonError;
-import spring.springboot.exceptions.ServerError;
 import spring.springboot.services.CategoryService;
-import spring.springboot.utils.ResponseController;
+import spring.springboot.utils.ResponseApi;
 import spring.springboot.validates.HandleValidateFields;
 
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -26,6 +24,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import spring.springboot.exceptions.GlobalExceptionHandler;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 public class CategoryController {
@@ -35,32 +35,31 @@ public class CategoryController {
     @Autowired
     ModelMapper modelMapper;
 
-    ServerError exception = new ServerError();
-    ResponseController res = new ResponseController();
-    CommonError error = new CommonError();
+    GlobalExceptionHandler ex = new GlobalExceptionHandler();
+    ResponseApi res = new ResponseApi();
     HandleValidateFields validate = new HandleValidateFields();
 
     @PostMapping(NameApi.createCategory)
-    public Map<String, Object> createCategory(@Valid @RequestBody CategoryDto dto) {
+    public ResponseEntity<Map<String, Object>> createCategory(@Valid @RequestBody CategoryDto dto) {
         try {
             CategoryEntity entity = modelMapper.map(dto, CategoryEntity.class);
             CategoryEntity result = cateService.createCategory(entity);
-            return res.responseResult(result, MsgResponse.createCategory);
+            return res.resResult(result, MsgResponse.createCategory);
         } catch (Exception e) {
-            return exception.interval();
+            return ex.serverInterval();
         }
     }
 
     @GetMapping(NameApi.getListCategories)
-    public Map<String, Object> getListCategorys(@RequestParam Map<String, String> query) {
+    public ResponseEntity<Map<String, Object>> getListCategorys(@RequestParam Map<String, String> query) {
         try {
             String limit = query.get(Constants.queryLimit);
             String page = query.get(Constants.queryPage);
             String searchKey = query.get(Constants.querySearchKey);
             Map<String, Object> results = cateService.listCategories(limit, page, searchKey);
-            return res.responseResult(results, MsgResponse.getListCategories);
+            return res.resResult(results, MsgResponse.getListCategories);
         } catch (Exception e) {
-            return exception.interval();
+            return ex.serverInterval();
         }
     }
 

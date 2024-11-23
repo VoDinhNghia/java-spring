@@ -5,6 +5,7 @@ import java.util.Map;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,15 +22,14 @@ import spring.springboot.constants.NameApi;
 import spring.springboot.dtos.LoginDto;
 import spring.springboot.dtos.LoginResponseDto;
 import spring.springboot.entities.UserEntity;
-import spring.springboot.exceptions.CommonError;
-import spring.springboot.exceptions.ServerError;
 import spring.springboot.services.UserService;
 import spring.springboot.utils.CryptoPassword;
 import spring.springboot.utils.JwtToken;
-import spring.springboot.utils.ResponseController;
+import spring.springboot.utils.ResponseApi;
 import spring.springboot.validates.HandleValidateFields;
 import org.springframework.web.bind.annotation.GetMapping;
 import spring.springboot.constants.SecurityConstant;
+import spring.springboot.exceptions.GlobalExceptionHandler;
 
 @RestController
 public class AuthController {
@@ -40,42 +40,41 @@ public class AuthController {
     ModelMapper modelMapper;
 
     HandleValidateFields validate = new HandleValidateFields();
-    ResponseController res = new ResponseController();
-    CommonError error = new CommonError();
-    ServerError exception = new ServerError();
+    ResponseApi res = new ResponseApi();
     JwtToken jwtToken = new JwtToken();
     CryptoPassword cryptoPassword = new CryptoPassword();
+    GlobalExceptionHandler ex = new GlobalExceptionHandler();
 
     @PostMapping(NameApi.authLogin)
-    public Map<String, Object> login(@Valid @RequestBody LoginDto dto) {
+    public ResponseEntity<Map<String, Object>> login(@Valid @RequestBody LoginDto dto) {
         try {
             UserEntity user = userService.findByEmail(dto.getEmail());
             if (user == null) {
-                return error.response(HttpStatusCode.NOT_FOUND, MsgResponse.userNotFound);
+                return ex.notFound(HttpStatusCode.NOT_FOUND, MsgResponse.userNotFound);
             }
             String pass = cryptoPassword.endCode(dto.getPassword());
             String userPass = user.getPassword();
             if (!userPass.equals(pass)) {
-                return error.response(HttpStatusCode.UN_AUTHORIZED, MsgResponse.unAuthorized);
+                return ex.unAuthen(HttpStatusCode.UN_AUTHORIZED, MsgResponse.unAuthorized);
             }
             LoginResponseDto response = modelMapper.map(user, LoginResponseDto.class);
             response.setAccessToken(jwtToken.generateJwtToken(dto.getEmail()));
-            return res.responseResult(response, MsgResponse.authLogin);
+            return res.resResult(response, MsgResponse.authLogin);
         } catch (Exception e) {
-            return exception.interval();
+            return ex.serverInterval();
         }
     }
 
     @GetMapping(NameApi.getMe)
-    public Map<String, Object> getMe(HttpServletRequest req) {
+    public ResponseEntity<Map<String, Object>> getMe(HttpServletRequest req) {
         try {
             String headerReq = req.getHeader(SecurityConstant.authorization);
             String accessToken = StringUtils.delete(headerReq, SecurityConstant.prefixBearToken).trim();
             String email = jwtToken.getEmailFromToken(accessToken);
             UserEntity user = userService.findByEmail(email);
-            return res.responseResult(user, MsgResponse.getMe);
+            return res.resResult(user, MsgResponse.getMe);
         } catch (Exception e) {
-            return exception.interval();
+            return ex.serverInterval();
         }
     }
 

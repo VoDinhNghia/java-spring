@@ -13,4 +13,8 @@ public class Constants {
     public static final String numberLimit = "numberLimit";
     public static final String resResults = "results";
     public static final String resTotal = "total";
+
+    public static final String statusCode = "statusCode";
+    public static final String message = "message";
+    public static final String data = "data";
 }
