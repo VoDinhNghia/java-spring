@@ -1,23 +1,46 @@
 version: "3.3"
 services:
-  #server:
-  #  container_name: server
-  #  build:
-  #    - dockerfile: dockerfile
-  #  ports:
-  #    - "3000:3000"
-  #    - "9229:9229"
-  #  environment:
-  #    - NODE_ENV=local
-  #    - ES_HOST=elasticsearch
-  #    - PORT=3000
-  #  network:
-  #    - elastic
+  mysqldb:
+    image: mysql:8.0
+    container_name: mysqldb
+    restart: unless-stopped
+    env_file: ./.env
+    environment:
+      - MYSQL_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
+      - MYSQL_DATABASE=$MYSQLDB_DATABASE
+    ports:
+      - $MYSQLDB_LOCAL_PORT:$MYSQLDB_DOCKER_PORT
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - elastic
+
+  app:
+    container_name: app
+    depends_on:
+      - mysqldb
+    build: .
+    restart: on-failure
+    env_file: ./.env
+    ports:
+      - $APP_POST:$APP_POST
+    environment:
+      - ES_HOST=elasticsearch
+      - SPRING_DATASOURCE_URL="jdbc:mysql://mysqldb:$MYSQLDB_DOCKER_PORT/$MYSQLDB_DATABASE?useSSL=false",
+      - SPRING_DATASOURCE_USERNAME="$MYSQLDB_USER",
+      - SPRING_DATASOURCE_PASSWORD="$MYSQLDB_ROOT_PASSWORD"
+    volumes:
+      - .m2:/root/.m2
+    stdin_open: true
+    tty: true
+    networks:
+      - elastic
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.16.0
     container_name: elasticsearch
     restart: always
+    env_file: ./.env
     environment:
       - node.name=elasticsearch
       - cluster.name=es-docker-cluster
@@ -38,7 +61,7 @@ services:
     volumes:
       - esdata:/usr/share/elasticsearch/data
     ports:
-      - 9200:9200
+      - $ES_POST:$ES_POST
     networks:
       - elastic
 
@@ -46,8 +69,9 @@ services:
     container_name: kibana
     image: docker.elastic.co/kibana/kibana:8.16.0
     restart: always
+    env_file: ./.env
     ports:
-      - "5601:5601"
+      - $KB_POST:$KB_POST
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
     networks:
@@ -57,6 +81,8 @@ services:
 
 volumes:
   esdata:
+    driver: local
+  db:
     driver: local
 
 networks:

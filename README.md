@@ -17,3 +17,6 @@
 
 - docker run -d --name es-container --net elastic -p 9200:9200 -e "xpack.security.enabled=false" -e "discovery.type=single-node" -e "ES_JAVA_OPTS=-Xms512m -Xmx512m" docker.elastic.co/elasticsearch/elasticsearch:8.16.0
 - docker run -d --name kb-container --net elastic -p 5601:5601 -e ELASTICSEARCH_URL=http://es-container:9200 docker.elastic.co/kibana/kibana:8.16.0
+## Use dockercompose
+- run cmd: mvn clean package
+- docker compose up
