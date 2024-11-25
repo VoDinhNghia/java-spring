@@ -1,13 +1,19 @@
-version: "3.3"
+version: "3.8"
 services:
-  mysqldb:
-    image: mysql:8.0
-    container_name: mysqldb
+  apdb:
+    image: mysql:8.0.33
+    container_name: apdb
     restart: unless-stopped
     env_file: ./.env
     environment:
       - MYSQL_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
       - MYSQL_DATABASE=$MYSQLDB_DATABASE
+      - MYSQL_ROOT_USER:$MYSQLDB_USER
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      retries: 10
+      interval: 3s
+      timeout: 30s
     ports:
       - $MYSQLDB_LOCAL_PORT:$MYSQLDB_DOCKER_PORT
     volumes:
@@ -15,10 +21,8 @@ services:
     networks:
       - elastic
 
-  app:
-    container_name: app
-    depends_on:
-      - mysqldb
+  appstore:
+    container_name: appstore
     build: .
     restart: on-failure
     env_file: ./.env
@@ -26,13 +30,13 @@ services:
       - $APP_POST:$APP_POST
     environment:
       - ES_HOST=elasticsearch
-      - SPRING_DATASOURCE_URL="jdbc:mysql://mysqldb:$MYSQLDB_DOCKER_PORT/$MYSQLDB_DATABASE?useSSL=false",
-      - SPRING_DATASOURCE_USERNAME="$MYSQLDB_USER",
-      - SPRING_DATASOURCE_PASSWORD="$MYSQLDB_ROOT_PASSWORD"
-    volumes:
-      - .m2:/root/.m2
+      - SPRING_DATASOURCE_URL=jdbc:mysql://apdb:$MYSQLDB_DOCKER_PORT/$MYSQLDB_DATABASE?autoReconnect=true&failOverReadOnly=false&maxReconnects=10
+      - SPRING_DATASOURCE_USERNAME=$MYSQLDB_USER
+      - SPRING_DATASOURCE_PASSWORD=$MYSQLDB_ROOT_PASSWORD
     stdin_open: true
     tty: true
+    depends_on:
+      - apdb
     networks:
       - elastic
 
@@ -83,7 +87,6 @@ volumes:
   esdata:
     driver: local
   db:
-    driver: local
 
 networks:
   elastic:
