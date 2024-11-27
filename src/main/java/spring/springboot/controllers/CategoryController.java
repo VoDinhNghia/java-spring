@@ -50,7 +50,10 @@ public class CategoryController {
         try {
             CategoryEntity entity = modelMapper.map(dto, CategoryEntity.class);
             CategoryEntity result = cateService.createCategory(entity);
-            ElasticEntity esEn = modelMapper.map(dto, ElasticEntity.class);
+            ElasticEntity esEn = new ElasticEntity();
+            esEn.setId(result.getId().toString());
+            esEn.setName(dto.getName());
+            esEn.setDescription(dto.getDescription());
             esRepo.save(esEn);
             return res.resResult(result, MsgResponse.createCategory);
         } catch (Exception e) {
