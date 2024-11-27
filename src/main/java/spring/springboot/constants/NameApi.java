@@ -11,4 +11,7 @@ public class NameApi {
     public static final String getListCategories = Constants.prefixPublic + "list-categories";
     public static final String deleteCategory = Constants.prefixPrivateAdmin + "delete-category";
 
+    public static final String createEls = Constants.prefixPublic + "elastic";
+    public static final String getEls = Constants.prefixPublic + "elastic";
+
 }
