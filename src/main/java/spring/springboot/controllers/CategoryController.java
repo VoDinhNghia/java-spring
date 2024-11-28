@@ -13,7 +13,6 @@ import spring.springboot.constants.MsgResponse;
 import spring.springboot.constants.NameApi;
 import spring.springboot.dtos.CategoryDto;
 import spring.springboot.entities.CategoryEntity;
-import spring.springboot.entities.ElasticEntity;
 import spring.springboot.services.CategoryService;
 import spring.springboot.utils.ResponseApi;
 import spring.springboot.validates.HandleValidateFields;
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import spring.springboot.exceptions.GlobalExceptionHandler;
-import spring.springboot.repositories.ElasticRepository;
 
 import org.springframework.http.ResponseEntity;
 
@@ -34,9 +32,6 @@ import org.springframework.http.ResponseEntity;
 public class CategoryController {
     @Autowired
     CategoryService cateService;
-
-    @Autowired
-    ElasticRepository esRepo;
 
     @Autowired
     ModelMapper modelMapper;
@@ -50,11 +45,6 @@ public class CategoryController {
         try {
             CategoryEntity entity = modelMapper.map(dto, CategoryEntity.class);
             CategoryEntity result = cateService.createCategory(entity);
-            ElasticEntity esEn = new ElasticEntity();
-            esEn.setId(result.getId().toString());
-            esEn.setName(dto.getName());
-            esEn.setDescription(dto.getDescription());
-            esRepo.save(esEn);
             return res.resResult(result, MsgResponse.createCategory);
         } catch (Exception e) {
             return ex.serverInterval();
@@ -69,26 +59,6 @@ public class CategoryController {
             String searchKey = query.get(Constants.querySearchKey);
             Map<String, Object> results = cateService.listCategories(limit, page, searchKey);
             return res.resResult(results, MsgResponse.getListCategories);
-        } catch (Exception e) {
-            return ex.serverInterval();
-        }
-    }
-
-    @PostMapping(NameApi.createEls)
-    public ResponseEntity<Map<String, Object>> testCreateDocsElas(@Valid @RequestBody ElasticEntity dto) {
-        try {
-            ElasticEntity result = esRepo.save(dto);
-            return res.resResult(result, MsgResponse.createCategory);
-        } catch (Exception e) {
-            return ex.serverInterval();
-        }
-    }
-
-    @GetMapping(NameApi.getEls)
-    public ResponseEntity<Map<String, Object>> testGetElastic() {
-        try {
-            Iterable<ElasticEntity> test = esRepo.findAll();
-            return res.resResult(test.iterator(), MsgResponse.getListCategories);
         } catch (Exception e) {
             return ex.serverInterval();
         }

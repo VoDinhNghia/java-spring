@@ -18,4 +18,7 @@ public class MsgResponse {
     public static final String deleteCategory = "Delete category success";
     public static final String getCategoryById = "Get category success";
     public static final String categoryNotFound = "Category not found";
+
+    public static final String createProduct = "Create product success";
+    public static final String getListProduct = "Get list product success";
 }
