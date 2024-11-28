@@ -14,4 +14,6 @@ public class NameApi {
     public static final String createEls = Constants.prefixPublic + "elastic";
     public static final String getEls = Constants.prefixPublic + "elastic";
 
+    public static final String createProduct = Constants.prefixPrivateAdmin + "create-product";
+
 }
