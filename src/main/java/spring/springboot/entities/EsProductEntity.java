@@ -3,6 +3,7 @@ package spring.springboot.entities;
 import org.springframework.data.elasticsearch.annotations.Document;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -14,9 +15,9 @@ public class EsProductEntity {
     @NotEmpty
     private String name;
 
-    @NotEmpty
+    @NotNull
     private int quantity;
 
-    @NotEmpty
+    @NotNull
     private Double price;
 }
