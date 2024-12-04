@@ -27,7 +27,7 @@ services:
     restart: on-failure
     env_file: ./.env
     ports:
-      - $APP_POST:$APP_POST
+      - $APP_PORT:$APP_PORT
     environment:
       - ES_HOST=elasticsearch
       - SPRING_DATASOURCE_URL=jdbc:mysql://apdb:$MYSQLDB_DOCKER_PORT/$MYSQLDB_DATABASE?autoReconnect=true&failOverReadOnly=false&maxReconnects=10
@@ -37,6 +37,7 @@ services:
     tty: true
     depends_on:
       - apdb
+      - redis
     networks:
       - elastic
 
@@ -65,7 +66,7 @@ services:
     volumes:
       - esdata:/usr/share/elasticsearch/data
     ports:
-      - $ES_POST:$ES_POST
+      - $ES_PORT:$ES_PORT
     networks:
       - elastic
 
@@ -75,7 +76,7 @@ services:
     restart: always
     env_file: ./.env
     ports:
-      - $KB_POST:$KB_POST
+      - $KB_PORT:$KB_PORT
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
     networks:
@@ -83,10 +84,23 @@ services:
     depends_on:
       - elasticsearch
 
+  redis:
+    image: redis:6-alpine
+    container_name: redis
+    restart: always
+    env_file: ./.env
+    ports:
+      - $REDIS_PORT:$REDIS_PORT
+    volumes:
+      - redis:/docker/data/redis:/data
+    networks:
+      - elastic
+
 volumes:
   esdata:
     driver: local
   db:
+  redis:
 
 networks:
   elastic:
